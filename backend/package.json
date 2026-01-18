@@ -1,0 +1,34 @@
+{
+  "name": "the-perspective-backend",
+  "version": "1.0.0",
+  "description": "Backend API for The Perspective",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "migrate": "prisma migrate dev",
+    "generate": "prisma generate",
+    "studio": "prisma studio",
+    "seed": "node prisma/seed.js",
+    "vercel-build": "prisma generate"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.7.1",
+    "@prisma/client": "^5.7.1",
+    "express-validator": "^7.0.1",
+    "nodemailer": "^6.9.7",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

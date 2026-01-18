@@ -1,0 +1,217 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  role          Role      @default(READER)
+  bio           String?
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  articles      Article[]
+  interviews    Interview[]
+  podcasts      Podcast[]
+  contributions Contribution[]
+}
+
+enum Role {
+  READER
+  CONTRIBUTOR
+  EDITOR
+  ADMIN
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  color       String?
+  createdAt   DateTime   @default(now())
+  articles    Article[]
+  interviews  Interview[]
+  podcasts    Podcast[]
+  events      Event[]
+}
+
+model Article {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  excerpt     String
+  content     String     @db.Text
+  featured    Boolean    @default(false)
+  published   Boolean    @default(false)
+  publishedAt DateTime?
+  readTime    Int        @default(5)
+  views       Int        @default(0)
+  imageUrl    String?
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id])
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  tags        Tag[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Interview {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  excerpt     String
+  content     String     @db.Text
+  featured    Boolean    @default(false)
+  published   Boolean    @default(false)
+  publishedAt DateTime?
+  readTime    Int        @default(10)
+  views       Int        @default(0)
+  imageUrl    String?
+  interviewee String
+  interviewerId String
+  interviewer User       @relation(fields: [interviewerId], references: [id])
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  tags        Tag[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Podcast {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String     @db.Text
+  featured    Boolean    @default(false)
+  published   Boolean    @default(false)
+  publishedAt DateTime?
+  duration    Int        // in minutes
+  audioUrl    String
+  imageUrl    String?
+  views       Int        @default(0)
+  guestId     String?
+  hostId      String
+  host        User       @relation(fields: [hostId], references: [id])
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  tags        Tag[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Event {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  description String     @db.Text
+  featured    Boolean    @default(false)
+  eventType   EventType
+  startDate   DateTime
+  endDate     DateTime?
+  location    String
+  isVirtual   Boolean    @default(false)
+  imageUrl    String?
+  capacity    Int?
+  registered  Int        @default(0)
+  categoryId  String
+  category    Category   @relation(fields: [categoryId], references: [id])
+  tags        Tag[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+enum EventType {
+  CONFERENCE
+  WEBINAR
+  WORKSHOP
+  PRODUCT_LAUNCH
+  AWARD_CEREMONY
+  INDUSTRY_MEET
+}
+
+model Tag {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  articles    Article[]
+  interviews  Interview[]
+  podcasts    Podcast[]
+  events      Event[]
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Poll {
+  id          String     @id @default(cuid())
+  question    String
+  active      Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  expiresAt   DateTime?
+  options     PollOption[]
+  votes       Vote[]
+}
+
+model PollOption {
+  id        String   @id @default(cuid())
+  text      String
+  pollId    String
+  poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  votes     Vote[]
+  createdAt DateTime @default(now())
+}
+
+model Vote {
+  id           String     @id @default(cuid())
+  pollId       String
+  poll         Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  optionId     String
+  option       PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  userIp       String?
+  userAgent    String?
+  createdAt    DateTime   @default(now())
+  
+  @@unique([pollId, userIp])
+}
+
+model Contribution {
+  id          String   @id @default(cuid())
+  type        ContributionType
+  title       String
+  content     String   @db.Text
+  status      ContributionStatus @default(PENDING)
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum ContributionType {
+  ARTICLE
+  INTERVIEW
+  OPINION
+}
+
+enum ContributionStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  REJECTED
+}
