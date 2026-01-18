@@ -10,10 +10,19 @@
     "start": "cd frontend && npm start",
     "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
   },
-  "keywords": ["publication", "media", "content"],
+  "keywords": [
+    "publication",
+    "media",
+    "content"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "next": "^16.1.3",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   }
 }
