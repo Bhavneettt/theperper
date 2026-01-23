@@ -49,7 +49,7 @@ export function WeeklyDigest() {
         setTopArticles(recentArticles)
         
         // Extract themes from categories
-        const uniqueThemes = Array.from(new Set(recentArticles.map((a: any) => a.category?.name).filter(Boolean)))
+        const uniqueThemes = Array.from(new Set(recentArticles.map((a: any) => a.category?.name).filter(Boolean))) as string[]
         setThemes(uniqueThemes.slice(0, 3))
       } catch (error) {
         console.error('Failed to fetch weekly digest:', error)
