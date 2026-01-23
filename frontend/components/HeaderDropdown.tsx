@@ -5,6 +5,7 @@ import Link from 'next/link'
 interface DropdownItem {
   label: string
   href: string
+  description?: string
 }
 
 interface DropdownSection {
@@ -31,14 +32,21 @@ export function HeaderDropdown({ sections, featuredContent }: DropdownProps) {
             {section.title && (
               <h4 className="text-xs font-bold text-primary uppercase mb-3">{section.title}</h4>
             )}
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {section.items.map((item, itemIdx) => (
                 <li key={itemIdx}>
                   <Link 
                     href={item.href} 
-                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-primary block"
+                    className="group/item block"
                   >
-                    {item.label}
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white group-hover/item:text-primary transition-colors block">
+                      {item.label}
+                    </span>
+                    {item.description && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 block">
+                        {item.description}
+                      </span>
+                    )}
                   </Link>
                 </li>
               ))}

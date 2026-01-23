@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { getFeaturedArticles } from '@/lib/api'
 import Image from 'next/image'
+import { BeatBadge } from '@/components/BeatBadge'
 
 interface Article {
   id: string
@@ -12,9 +13,14 @@ interface Article {
   excerpt: string
   imageUrl?: string
   readTime: number
+  contentType?: string
+  editorNote?: string
   author: {
     name: string
     avatar?: string
+    title?: string
+    company?: string
+    industry?: string
   }
   category: {
     name: string
@@ -86,9 +92,11 @@ export function FeaturedPerspectives() {
               )}
             </div>
             <div className="p-6 md:p-8 flex flex-col gap-4">
-              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wide">
-                <span className="text-primary bg-primary/10 px-2 py-1 rounded">Editor's Pick</span>
-                <span className="text-gray-500">{featuredArticle.category.name}</span>
+              <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-wide flex-wrap">
+                <span className="text-primary bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">Editor's Pick</span>
+                {featuredArticle.category?.slug && (
+                  <BeatBadge beatSlug={featuredArticle.category.slug} size="sm" />
+                )}
                 <span className="text-gray-400">•</span>
                 <span className="text-gray-500">{new Date(featuredArticle.publishedAt).toLocaleDateString()}</span>
               </div>
@@ -100,22 +108,40 @@ export function FeaturedPerspectives() {
               <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed line-clamp-2">
                 {featuredArticle.excerpt}
               </p>
-              <div className="flex items-center justify-between mt-2">
-                <div className="flex items-center gap-3">
+              {featuredArticle.editorNote && (
+                <div className="bg-primary/5 border-l-4 border-primary p-3 rounded-r">
+                  <p className="text-xs font-bold text-primary uppercase mb-1">Why This Matters</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{featuredArticle.editorNote}</p>
+                </div>
+              )}
+              <div className="flex items-start justify-between mt-2 gap-4">
+                <div className="flex items-start gap-3 flex-1">
                   {featuredArticle.author.avatar ? (
                     <Image
                       src={featuredArticle.author.avatar}
                       alt={featuredArticle.author.name}
-                      width={32}
-                      height={32}
-                      className="size-8 rounded-full object-cover"
+                      width={48}
+                      height={48}
+                      className="size-12 rounded-full object-cover border-[3px] border-primary/30"
                     />
                   ) : (
-                    <div className="size-8 rounded-full bg-gray-300"></div>
+                    <div className="size-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 border-[3px] border-primary/30"></div>
                   )}
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">{featuredArticle.author.name}</span>
+                  <div className="flex flex-col">
+                    <span className="text-base font-black text-gray-900 dark:text-white">{featuredArticle.author.name}</span>
+                    {(featuredArticle.author.title || featuredArticle.author.company) && (
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                        {featuredArticle.author.title}
+                        {featuredArticle.author.title && featuredArticle.author.company && ' at '}
+                        {featuredArticle.author.company}
+                      </span>
+                    )}
+                    {featuredArticle.author.industry && (
+                      <span className="text-xs text-primary font-medium mt-0.5">{featuredArticle.author.industry}</span>
+                    )}
+                  </div>
                 </div>
-                <span className="text-sm text-gray-500">{featuredArticle.readTime} min read</span>
+                <span className="text-sm text-gray-500 whitespace-nowrap">{featuredArticle.readTime} min read</span>
               </div>
             </div>
           </div>
@@ -136,13 +162,32 @@ export function FeaturedPerspectives() {
               )}
             </div>
             <div className="flex flex-col gap-2">
-              <span className="text-xs font-bold text-primary uppercase">{article.category.name}</span>
+              {article.category?.slug && (
+                <BeatBadge beatSlug={article.category.slug} size="sm" />
+              )}
               <h4 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors dark:text-white">
                 {article.title}
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                 {article.excerpt}
               </p>
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+                {article.author.avatar ? (
+                  <Image
+                    src={article.author.avatar}
+                    alt={article.author.name}
+                    width={20}
+                    height={20}
+                    className="size-5 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="size-5 rounded-full bg-gray-300"></div>
+                )}
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-300">{article.author.name}</span>
+                {article.author.title && (
+                  <span className="text-xs text-gray-500">• {article.author.title}</span>
+                )}
+              </div>
             </div>
           </Link>
         ))}

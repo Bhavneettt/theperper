@@ -33,6 +33,8 @@ app.use('/api/newsletter', require('./routes/newsletter'));
 app.use('/api/polls', require('./routes/polls'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/categories', require('./routes/categories'));
+app.use('/api/debates', require('./routes/debates'));
+app.use('/api/authors', require('./routes/authors'));
 
 // Health check
 app.get('/api/health', (req, res) => {

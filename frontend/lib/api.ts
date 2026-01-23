@@ -14,6 +14,8 @@ export const getArticles = async (params?: {
   page?: number
   limit?: number
   category?: string
+  beat?: string
+  contentType?: string
   featured?: boolean
 }) => {
   const response = await api.get('/articles', { params })
@@ -106,6 +108,28 @@ export const search = async (query: string, type?: string) => {
 // Categories
 export const getCategories = async () => {
   const response = await api.get('/categories')
+  return response.data
+}
+
+// Debates
+export const getActiveDebate = async () => {
+  const response = await api.get('/debates/active')
+  return response.data
+}
+
+// Authors
+export const getAuthor = async (id: string) => {
+  const response = await api.get(`/authors/${id}`)
+  return response.data
+}
+
+export const getAuthorArticles = async (id: string, params?: { page?: number; limit?: number }) => {
+  const response = await api.get(`/authors/${id}/articles`, { params })
+  return response.data
+}
+
+export const getAuthors = async () => {
+  const response = await api.get('/authors')
   return response.data
 }
 

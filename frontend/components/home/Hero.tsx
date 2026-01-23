@@ -20,10 +20,10 @@ export function Hero() {
           </div>
           <div className="max-w-2xl flex flex-col gap-6">
             <h1 className="text-5xl md:text-7xl font-black leading-tight tracking-tight text-white drop-shadow-lg">
-              Clarity in a <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-300">Complex World</span>
+              Provoking Thoughts, <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-300">Inspiring Dialogue</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 font-light leading-relaxed drop-shadow-md">
-              Authentic, opinion-driven content from the industry leaders shaping our future. Unfiltered insights you won't find anywhere else.
+              Authentic, unfiltered perspectives from industry thought leaders. Real opinions—not polished PR. The voices that challenge, provoke, and inspire change.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -33,6 +33,7 @@ export function Hero() {
             </Link>
             <Link href="/contribute" className="flex items-center gap-2 h-14 px-8 rounded-lg bg-white/5 hover:bg-white/10 text-white text-lg font-medium backdrop-blur-md transition-all border border-white/10 hover:border-white/30">
               Become a Contributor
+              <span className="material-symbols-outlined text-sm">arrow_forward</span>
             </Link>
           </div>
         </div>

@@ -1,52 +1,38 @@
 'use client'
 
 import Link from 'next/link'
-import { useTheme } from './ThemeProvider'
-import { useState } from 'react'
-import { Notifications } from './Notifications'
 import { HeaderDropdown } from './HeaderDropdown'
 import { MobileMenu } from './MobileMenu'
+import { useTheme } from './ThemeProvider'
 
 export function Header() {
-  const { toggleTheme } = useTheme()
-  const [searchQuery, setSearchQuery] = useState('')
+  const { theme, toggleTheme } = useTheme()
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`
-    }
-  }
-
-  // Industry Stories dropdown
-  const industryStoriesSections = [
+  // Industry Beats dropdown - The 8 core beats
+  const industryBeatsSections = [
     {
+      title: 'Industry Beats',
       items: [
-        { label: 'Tech', href: '/articles?category=tech' },
-        { label: 'GCC', href: '/articles?category=gcc' },
-        { label: 'HR', href: '/articles?category=hr' },
-        { label: 'Healthcare', href: '/articles?category=healthcare' },
-        { label: 'Automobile', href: '/articles?category=automobile' },
-        { label: 'EV', href: '/articles?category=ev' },
-        { label: 'Education/EdTech', href: '/articles?category=education' },
-        { label: 'Lifestyle', href: '/articles?category=lifestyle' },
-        { label: 'A&M', href: '/articles?category=am' },
+        { label: 'Technology & Innovation', href: '/articles?beat=technology-innovation', description: 'Where ideas meet impact' },
+        { label: 'Business & Leadership', href: '/articles?beat=business-leadership', description: 'Beyond boardrooms and balance sheets' },
+        { label: 'Sustainability & Purpose', href: '/articles?beat=sustainability-purpose', description: 'The business of doing good' },
+        { label: 'Work & Culture', href: '/articles?beat=work-culture', description: 'Inside the evolving workplace' },
+        { label: 'Consumer & Lifestyle', href: '/articles?beat=consumer-lifestyle', description: 'From insight to instinct' },
+        { label: 'Policy & Public Discourse', href: '/articles?beat=policy-public-discourse', description: 'Where industry meets society' },
+        { label: 'Education & Future Skills', href: '/articles?beat=education-future-skills', description: 'Learning redefined' },
+        { label: 'Health & Wellbeing', href: '/articles?beat=health-wellbeing', description: 'A human-first lens on healthcare' },
       ]
     }
   ]
 
-  // Authored Articles dropdown
+  // Authored Articles dropdown - Content Types
   const authoredArticlesSections = [
     {
-      title: 'Categories',
+      title: 'Content Types',
       items: [
-        { label: 'Leadership & CXO Views', href: '/articles?category=leadership-cxo' },
-        { label: 'Expert Opinions', href: '/articles?category=expert-opinions' },
-        { label: 'Thought Leadership', href: '/articles?category=thought-leadership' },
-        { label: 'Market Insights', href: '/articles?category=market-insights' },
-        { label: 'Policy & Regulations', href: '/articles?category=policy-regulations' },
-        { label: 'Innovation & Trends', href: '/articles?category=innovation-trends' },
-        { label: 'Startup Perspectives', href: '/articles?category=startup-perspectives' },
+        { label: 'Featured Perspectives', href: '/articles?contentType=FEATURED_PERSPECTIVE', description: 'Editor\'s picks from thought leaders' },
+        { label: 'Insider View', href: '/articles?contentType=INSIDER_VIEW', description: 'Mid-to-senior professional voices' },
+        { label: 'Debate Room', href: '/articles?contentType=DEBATE_ROOM', description: 'Opposing viewpoints on key issues' },
       ]
     }
   ]
@@ -97,7 +83,7 @@ export function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-surface-dark bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
       <div className="flex items-center justify-between px-6 py-3 lg:px-10 h-16">
         <div className="flex items-center gap-8 h-full">
           <Link href="/" className="flex items-center gap-3 text-gray-900 dark:text-white cursor-pointer hover:opacity-80 transition-opacity">
@@ -110,12 +96,12 @@ export function Header() {
             <h2 className="text-xl font-bold leading-tight tracking-tight">The Perspective</h2>
           </Link>
           <nav className="hidden lg:flex items-center gap-2 h-full">
-            {/* Industry Stories */}
+            {/* Industry Beats */}
             <div className="group relative h-full flex items-center">
               <Link href="/articles" className="px-3 py-2 text-sm font-medium leading-normal hover:text-primary transition-colors cursor-pointer flex items-center gap-1">
-                Industry Stories <span className="material-symbols-outlined text-[16px]">expand_more</span>
+                Industry Beats <span className="material-symbols-outlined text-[16px]">expand_more</span>
               </Link>
-              <HeaderDropdown sections={industryStoriesSections} />
+              <HeaderDropdown sections={industryBeatsSections} />
             </div>
 
             {/* Authored Articles */}
@@ -149,38 +135,27 @@ export function Header() {
               </Link>
               <HeaderDropdown sections={podcastsSections} />
             </div>
+
+            {/* Authors */}
+            <Link href="/authors" className="px-3 py-2 text-sm font-medium leading-normal hover:text-primary transition-colors cursor-pointer">
+              Authors
+            </Link>
           </nav>
           <MobileMenu />
         </div>
-        <div className="flex items-center gap-6">
-          <div className="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
-            <form onSubmit={handleSearch} className="flex w-full flex-1 items-stretch rounded-lg h-full bg-gray-100 dark:bg-surface-dark transition-colors">
-              <div className="text-gray-500 dark:text-text-secondary flex items-center justify-center pl-4 rounded-l-lg border-r-0">
-                <span className="material-symbols-outlined text-[20px]">search</span>
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-gray-500 dark:placeholder:text-text-secondary px-4 rounded-l-none pl-2 text-sm font-normal"
-                placeholder="Search topics..."
-              />
-            </form>
-          </div>
-          <div className="flex gap-2">
-            <button
-              aria-label="Toggle Dark Mode"
-              onClick={toggleTheme}
-              className="flex items-center justify-center rounded-lg size-10 bg-gray-100 dark:bg-surface-dark text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-opacity-80 transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px] dark:hidden">dark_mode</span>
-              <span className="material-symbols-outlined text-[20px] hidden dark:block">light_mode</span>
-            </button>
-            <Notifications />
-            <Link href="/login" className="flex items-center justify-center rounded-lg size-10 bg-primary text-white hover:bg-blue-600 transition-colors shadow-md">
-              <span className="material-symbols-outlined text-[20px]">person</span>
-            </Link>
-          </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center rounded-lg size-10 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle dark mode"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
+          <Link href="/login" className="flex items-center justify-center rounded-lg size-10 bg-primary text-white hover:bg-blue-600 transition-colors shadow-md">
+            <span className="material-symbols-outlined text-[20px]">person</span>
+          </Link>
         </div>
       </div>
     </header>

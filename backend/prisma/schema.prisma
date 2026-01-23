@@ -1,154 +1,150 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String         @id @default(cuid())
+  email         String         @unique
   name          String?
   password      String?
-  role          Role      @default(READER)
+  role          Role           @default(READER)
   bio           String?
   avatar        String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  title         String?
+  company       String?
+  industry      String?
+  credentials   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   articles      Article[]
+  contributions Contribution[]
   interviews    Interview[]
   podcasts      Podcast[]
-  contributions Contribution[]
-}
-
-enum Role {
-  READER
-  CONTRIBUTOR
-  EDITOR
-  ADMIN
 }
 
 model Category {
-  id          String     @id @default(cuid())
-  name        String     @unique
-  slug        String     @unique
+  id          String        @id @default(cuid())
+  name        String        @unique
+  slug        String        @unique
   description String?
   color       String?
-  createdAt   DateTime   @default(now())
+  beat        IndustryBeat?
+  createdAt   DateTime      @default(now())
   articles    Article[]
+  events      Event[]
   interviews  Interview[]
   podcasts    Podcast[]
-  events      Event[]
+
+  @@index([beat])
 }
 
 model Article {
-  id          String     @id @default(cuid())
-  title       String
-  slug        String     @unique
-  excerpt     String
-  content     String     @db.Text
-  featured    Boolean    @default(false)
-  published   Boolean    @default(false)
-  publishedAt DateTime?
-  readTime    Int        @default(5)
-  views       Int        @default(0)
-  imageUrl    String?
-  authorId    String
-  author      User       @relation(fields: [authorId], references: [id])
-  categoryId  String
-  category    Category   @relation(fields: [categoryId], references: [id])
-  tags        Tag[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id            String       @id @default(cuid())
+  title         String
+  slug          String       @unique
+  excerpt       String
+  content       String
+  featured      Boolean      @default(false)
+  published     Boolean      @default(false)
+  publishedAt   DateTime?
+  readTime      Int          @default(5)
+  views         Int          @default(0)
+  imageUrl      String?
+  contentType   ContentType?
+  editorNote    String?
+  authorId      String
+  categoryId    String
+  debateTopicId String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  author        User         @relation(fields: [authorId], references: [id])
+  category      Category     @relation(fields: [categoryId], references: [id])
+  DebateTopic   DebateTopic? @relation(fields: [debateTopicId], references: [id])
+  tags          Tag[]        @relation("ArticleToTag")
+
+  @@index([contentType])
+  @@index([debateTopicId])
 }
 
 model Interview {
-  id          String     @id @default(cuid())
-  title       String
-  slug        String     @unique
-  excerpt     String
-  content     String     @db.Text
-  featured    Boolean    @default(false)
-  published   Boolean    @default(false)
-  publishedAt DateTime?
-  readTime    Int        @default(10)
-  views       Int        @default(0)
-  imageUrl    String?
-  interviewee String
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String
+  content       String
+  featured      Boolean   @default(false)
+  published     Boolean   @default(false)
+  publishedAt   DateTime?
+  readTime      Int       @default(10)
+  views         Int       @default(0)
+  imageUrl      String?
+  interviewee   String
   interviewerId String
-  interviewer User       @relation(fields: [interviewerId], references: [id])
-  categoryId  String
-  category    Category   @relation(fields: [categoryId], references: [id])
-  tags        Tag[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  categoryId    String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  category      Category  @relation(fields: [categoryId], references: [id])
+  interviewer   User      @relation(fields: [interviewerId], references: [id])
+  tags          Tag[]     @relation("InterviewToTag")
 }
 
 model Podcast {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  slug        String     @unique
-  description String     @db.Text
-  featured    Boolean    @default(false)
-  published   Boolean    @default(false)
+  slug        String    @unique
+  description String
+  featured    Boolean   @default(false)
+  published   Boolean   @default(false)
   publishedAt DateTime?
-  duration    Int        // in minutes
+  duration    Int
   audioUrl    String
   imageUrl    String?
-  views       Int        @default(0)
+  views       Int       @default(0)
   guestId     String?
   hostId      String
-  host        User       @relation(fields: [hostId], references: [id])
   categoryId  String
-  category    Category   @relation(fields: [categoryId], references: [id])
-  tags        Tag[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  category    Category  @relation(fields: [categoryId], references: [id])
+  host        User      @relation(fields: [hostId], references: [id])
+  tags        Tag[]     @relation("PodcastToTag")
 }
 
 model Event {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   title       String
-  slug        String     @unique
-  description String     @db.Text
-  featured    Boolean    @default(false)
+  slug        String    @unique
+  description String
+  featured    Boolean   @default(false)
   eventType   EventType
   startDate   DateTime
   endDate     DateTime?
   location    String
-  isVirtual   Boolean    @default(false)
+  isVirtual   Boolean   @default(false)
   imageUrl    String?
   capacity    Int?
-  registered  Int        @default(0)
+  registered  Int       @default(0)
   categoryId  String
-  category    Category   @relation(fields: [categoryId], references: [id])
-  tags        Tag[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-}
-
-enum EventType {
-  CONFERENCE
-  WEBINAR
-  WORKSHOP
-  PRODUCT_LAUNCH
-  AWARD_CEREMONY
-  INDUSTRY_MEET
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  category    Category  @relation(fields: [categoryId], references: [id])
+  tags        Tag[]     @relation("EventToTag")
 }
 
 model Tag {
-  id          String     @id @default(cuid())
-  name        String     @unique
-  slug        String     @unique
-  articles    Article[]
-  interviews  Interview[]
-  podcasts    Podcast[]
-  events      Event[]
+  id         String      @id @default(cuid())
+  name       String      @unique
+  slug       String      @unique
+  articles   Article[]   @relation("ArticleToTag")
+  events     Event[]     @relation("EventToTag")
+  interviews Interview[] @relation("InterviewToTag")
+  podcasts   Podcast[]   @relation("PodcastToTag")
 }
 
 model Newsletter {
@@ -160,47 +156,74 @@ model Newsletter {
 }
 
 model Poll {
-  id          String     @id @default(cuid())
-  question    String
-  active      Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  expiresAt   DateTime?
-  options     PollOption[]
-  votes       Vote[]
+  id        String       @id @default(cuid())
+  question  String
+  active    Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  expiresAt DateTime?
+  options   PollOption[]
+  votes     Vote[]
 }
 
 model PollOption {
   id        String   @id @default(cuid())
   text      String
   pollId    String
+  createdAt DateTime @default(now())
   poll      Poll     @relation(fields: [pollId], references: [id], onDelete: Cascade)
   votes     Vote[]
-  createdAt DateTime @default(now())
 }
 
 model Vote {
-  id           String     @id @default(cuid())
-  pollId       String
-  poll         Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
-  optionId     String
-  option       PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  userIp       String?
-  userAgent    String?
-  createdAt    DateTime   @default(now())
-  
+  id        String     @id @default(cuid())
+  pollId    String
+  optionId  String
+  userIp    String?
+  userAgent String?
+  createdAt DateTime   @default(now())
+  option    PollOption @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  poll      Poll       @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
   @@unique([pollId, userIp])
 }
 
 model Contribution {
-  id          String   @id @default(cuid())
-  type        ContributionType
+  id        String             @id @default(cuid())
+  type      ContributionType
+  title     String
+  content   String
+  status    ContributionStatus @default(PENDING)
+  authorId  String
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  author    User               @relation(fields: [authorId], references: [id])
+}
+
+model DebateTopic {
+  id          String    @id
   title       String
-  content     String   @db.Text
-  status      ContributionStatus @default(PENDING)
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  slug        String    @unique
+  description String
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  Article     Article[]
+}
+
+enum Role {
+  READER
+  CONTRIBUTOR
+  EDITOR
+  ADMIN
+}
+
+enum EventType {
+  CONFERENCE
+  WEBINAR
+  WORKSHOP
+  PRODUCT_LAUNCH
+  AWARD_CEREMONY
+  INDUSTRY_MEET
 }
 
 enum ContributionType {
@@ -214,4 +237,23 @@ enum ContributionStatus {
   REVIEWING
   APPROVED
   REJECTED
+}
+
+enum ContentType {
+  FEATURED_PERSPECTIVE
+  INSIDER_VIEW
+  DEBATE_ROOM
+  PULSE_CHECK
+  WEEKLY_DIGEST
+}
+
+enum IndustryBeat {
+  TECHNOLOGY_INNOVATION
+  BUSINESS_LEADERSHIP
+  SUSTAINABILITY_PURPOSE
+  WORK_CULTURE
+  CONSUMER_LIFESTYLE
+  POLICY_PUBLIC_DISCOURSE
+  EDUCATION_FUTURE_SKILLS
+  HEALTH_WELLBEING
 }

@@ -2,6 +2,8 @@ import { Hero } from '@/components/home/Hero'
 import { FeaturedPerspectives } from '@/components/home/FeaturedPerspectives'
 import { DebateRoom } from '@/components/home/DebateRoom'
 import { InsiderView } from '@/components/home/InsiderView'
+import { PulseCheck } from '@/components/home/PulseCheck'
+import { WeeklyDigest } from '@/components/home/WeeklyDigest'
 import { Sidebar } from '@/components/home/Sidebar'
 
 export default async function Home() {
@@ -14,6 +16,8 @@ export default async function Home() {
             <FeaturedPerspectives />
             <DebateRoom />
             <InsiderView />
+            <PulseCheck />
+            <WeeklyDigest />
           </div>
           <Sidebar />
         </div>

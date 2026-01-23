@@ -10,12 +10,16 @@ router.get('/', async (req, res) => {
     const limit = parseInt(req.query.limit) || 12;
     const skip = (page - 1) * limit;
     const category = req.query.category;
+    const beat = req.query.beat; // New: filter by beat slug
     const featured = req.query.featured === 'true';
+    const contentType = req.query.contentType; // Filter by content type
 
     const where = {
       published: true,
       ...(category && { category: { slug: category } }),
-      ...(featured && { featured: true })
+      ...(beat && { category: { slug: beat } }), // Beat filtering via category slug
+      ...(featured && { featured: true }),
+      ...(contentType && { contentType: contentType })
     };
 
     const [articles, total] = await Promise.all([
@@ -26,7 +30,11 @@ router.get('/', async (req, res) => {
             select: {
               id: true,
               name: true,
-              avatar: true
+              avatar: true,
+              title: true,
+              company: true,
+              industry: true,
+              credentials: true
             }
           },
           category: true,
@@ -64,11 +72,39 @@ router.get('/:slug', async (req, res) => {
             id: true,
             name: true,
             bio: true,
-            avatar: true
+            avatar: true,
+            title: true,
+            company: true,
+            industry: true,
+            credentials: true
           }
         },
         category: true,
-        tags: true
+        tags: true,
+        DebateTopic: {
+          include: {
+            articles: {
+              where: {
+                published: true
+              },
+              take: 3,
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                excerpt: true,
+                author: {
+                  select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                    title: true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
 
@@ -101,7 +137,12 @@ router.get('/featured/latest', async (req, res) => {
           select: {
             id: true,
             name: true,
-            avatar: true
+            avatar: true,
+            title: true,
+            company: true,
+            industry: true,
+            credentials: true,
+            bio: true
           }
         },
         category: true
